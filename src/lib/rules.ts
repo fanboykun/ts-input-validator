@@ -13,23 +13,27 @@ export class Rules implements ruleType
         'password': () => this.password(),
         'string': () => this.string(),
         'accepted': () => this.accepted(),
+        'declined': () => this.declined(),
         'boolean': () => this.boolean(),
         'date': () => this.date(),
+        'uuid': () => this.uuid(),
+        'decimal': () => this.decimal(),
+        'integer': () => this.integer(),
     } as const
 
     public result: validationResult;
 
-    public param:unknown    // param binding for wildcard method, example: min:8
+    public param:unknown    // param binding for wildcard method, example: min:8, this property receive the 8
 
-    public messages: ValidationMessage = validationMessage
+    public messages: ValidationMessage = {...validationMessage}
 
     constructor(object: validateType) {
-        this.object = object;
+        this.object = {...object};
         this.result = { valid: true, message: {} }
     }
 
     validate(): validationResult {
-        const rules = this.object.rules.split('|')
+        const rules = typeof this.object.rules === 'string' ? this.object.rules.split('|') : this.object.rules
         const wildcardMethodRegex = /^(\w+):(\d+(\.\d+)?)$/;  // regex for wildcard method
 
         for (let i = 0; i < rules.length; i++) {
@@ -121,6 +125,12 @@ export class Rules implements ruleType
         this.putMessage('accepted', this.object.key)
     }
 
+    declined() {
+        const data = this.object.data
+        if(data === "no" || data === "off" || data === "false" || data === false || data === 0) return
+        this.putMessage('declined', this.object.key)
+    }
+
     boolean() {
         const data = this.object.data
         if(typeof data === 'boolean' || data === 1) return
@@ -134,9 +144,38 @@ export class Rules implements ruleType
         if(isNaN(date.getTime())) this.putMessage('date', this.object.key)
     }
 
-    private checkIsNan(): boolean {
+    uuid() {
+        const data = this.object.data as string
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if(!uuidRegex.test(data)) {
+            this.putMessage('uuid', this.object.key)
+        }
+    }
+
+    decimal() {
+        const data = this.object.data
+        const param = this.param as number
+        if(this.checkIsNan()) return
+        if( typeof this.object.data === 'string' && this.object.data != '') {
+            const regex = new RegExp(`^-?\\d+(\\.\\d{1,${param}})?$`);
+            const match = (data as string).match(regex)
+            if(match && String(match[1]).length === +param + 1 && String(match[1]).includes('0') === false) return
+        } else if(typeof data === 'number' && data >= 0 ) {
+            let splitted = String(data).split('.')
+            if(splitted.length === 2 && splitted[1].length === +param) return
+        }
+        this.putMessage('decimal', this.object.key)
+    }
+
+    integer() {
+        const data = this.object.data as number
+        if(!isNaN(data) && Number.isInteger(data) && data > 0 && isFinite(data)) return
+        this.putMessage('integer', this.object.key)
+    }
+
+    private checkIsNan(shouldPutToMessage = true): boolean {
         if(isNaN(this.param as number)) {
-            this.putMessage('number', this.object.key)
+            if(shouldPutToMessage) this.putMessage('number', this.object.key)
             return true
         }
         return false

@@ -1,26 +1,28 @@
 import { Rules } from "../lib/rules"
 
+type DynamicRule<T extends string|number = string> = `min:${T}`|`max:${T}`|`decimal:${T}`
+type PredifinedRule = Exclude< ValidationMethodKeys, 'min' | 'max' | 'decimal' > | DynamicRule
+export type Rule = PredifinedRule[]|string
+
 export interface validateType {
     data: unknown
     key: string
-    rules: string
-    message?: Record<string, string>
+    rules: Rule
+    message?: ValidationMessage
 }
 
 export interface ruleType {
     object: validateType
-    methods: Record<string, validationMethod>
+    methods: Record<PredifinedRule, validationMethod>
     result: validationResult
     param: unknown
     validate(): validationResult
 }
-
 export type validationMethod = () => void
 
 export type validationResult = {
-    // key: string
     valid: boolean
-    message:string|Record<string, string>
+    message:string|ValidationMessage
     data?:unknown
 }
 
@@ -43,5 +45,9 @@ export const validationMessage: ValidationMessage = {
     email: ':attr must be a valid email',
     password: ':attr must be a valid password',
     accepted: ':attr must be accepted',
+    declined: ':attr must be a rejected',
     date: ':attr must be a valid date',
+    uuid: ':attr must be a valid uuid version 4',
+    decimal: ':attr must be a valid decimal with :decimal digit',
+    integer: ':attr must be a valid integer, larger than 0, no decimal and not infinite',
 } as const
