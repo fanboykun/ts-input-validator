@@ -57,7 +57,7 @@ export class Rules implements ruleType
         const data = this.object.data
         if( (data instanceof Array && data?.length === 0) || 
             (data === undefined || data === null || data === '')
-        ) this.putMessage('required', `${this.object.key} field is required`)
+        ) this.putMessage('required', this.object.key)
     }
 
     min() {
@@ -69,7 +69,7 @@ export class Rules implements ruleType
         else if(typeof this.object.data === 'string' && this.object.data.length < maxValue) { validated = false }
 
         if(validated === false) {
-            this.putMessage('min', `${this.object.key} is smaller than ${maxValue}`)
+            this.putMessage('min', this.object.key)
         }
     }
 
@@ -82,7 +82,7 @@ export class Rules implements ruleType
         else if(typeof this.object.data === 'string' && this.object.data.length > maxValue) { validated = false }
 
         if(validated === false) {
-            this.putMessage('max', `${this.object.key} is larger than ${maxValue}`)
+            this.putMessage('max', this.object.key)
             // this.putMessage('max', this.result.message['max'] as string)
         }
     }
@@ -90,63 +90,63 @@ export class Rules implements ruleType
     email() {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if(!emailRegex.test(this.object.data as string)) {
-            this.putMessage('email', `${this.object.key} is not a valid email`)
+            this.putMessage('email', this.object.key)
         }
     }
 
     password() {
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         if(!passwordRegex.test(this.object.data as string)) {
-            this.putMessage('password', `${this.object.key} is not a valid password`)
+            this.putMessage('password', this.object.key)
         }
     }
 
     number() {
         const data = this.object.data as number
         if(typeof data !== 'number' || isNaN(data)) {
-            this.putMessage('number', `${this.object.key} is not a valid number`)
+            this.putMessage('number', this.object.key)
         }
     }
 
     string() {
         const data = this.object.data
         if(typeof data !== 'string' || data === '') {
-            this.putMessage('string', `${this.object.key} is not a valid string`)
+            this.putMessage('string', this.object.key)
         }
     }
 
     accepted() {
         const data = this.object.data
         if(data === "yes" || data === "on" || data === "true" || data === true || data === 1) return
-        this.putMessage('accepted', `${this.object.key} is not accepted`)
+        this.putMessage('accepted', this.object.key)
     }
 
     boolean() {
         const data = this.object.data
         if(typeof data === 'boolean' || data === 1) return
-        this.putMessage('boolean', `${this.object.key} is not a valid boolean`)
+        this.putMessage('boolean', this.object.key)
     }
 
     date() {
         const data = this.object.data
         if(data instanceof Date) return
         const date = new Date(data as string)
-        if(isNaN(date.getTime())) this.putMessage('date', `${this.object.key} is not a valid date`)
+        if(isNaN(date.getTime())) this.putMessage('date', this.object.key)
     }
 
     private checkIsNan(): boolean {
         if(isNaN(this.param as number)) {
-            this.putMessage('number', `${this.object.key} is not a number`)
+            this.putMessage('number', this.object.key)
             return true
         }
         return false
     }
 
-    private putMessage(prop:keyof Rules["methods"], message: string, valid:boolean = false) {
+    private putMessage(prop:keyof Rules["methods"], key: string, valid:boolean = false) {
         if(!valid) this.result.valid = false
         if(typeof this.object.message === 'undefined' || !this.object?.message.hasOwnProperty(prop)) {
             const attrSplit = this.messages[prop]
-            let finalMsg = attrSplit !== undefined ? attrSplit.replace(/:attr/g, this.object.key) : `${this.object.key} is invalid`
+            let finalMsg = attrSplit !== undefined ? attrSplit.replace(/:attr/g, key) : `${key} is invalid`
             this.result.message[prop] = finalMsg
         } else if(this.object?.message.hasOwnProperty(prop)) {
             this.result.message[prop] = this.object?.message[prop] 

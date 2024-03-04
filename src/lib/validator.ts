@@ -30,7 +30,7 @@ export class Validator
 
             if(this.config.returnInvalidOnly === false) {
                 allResult[toBeValidated.key] = result
-            }else if(this.config.returnInvalidOnly === true && !result.valid) {
+            }else if(this.config.returnInvalidOnly === true && result.valid === false) {
                 allResult[toBeValidated.key] = result
             }
         }
@@ -39,9 +39,9 @@ export class Validator
     }
 
     static setup(setup: validatorSetup): typeof Validator {
-        this.config.dataInResult = setup.dataInResult
-        this.config.returnInvalidOnly = setup.returnInvalidOnly
-        this.config.setMessage = setup.setMessage
+        this.config.dataInResult = setup.dataInResult ?? this.config.dataInResult
+        this.config.returnInvalidOnly = setup.returnInvalidOnly ?? this.config.returnInvalidOnly
+        this.config.setMessage = setup.setMessage ?? this.config.setMessage
         return this
     }
 
