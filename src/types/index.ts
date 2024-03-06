@@ -1,10 +1,9 @@
 import { Rules } from "../lib/rules"
 
-type DynamicRule<T extends string|number = string> = `min:${T}`|`max:${T}`|`decimal:${T}`
-type PredifinedRule = Exclude< ValidationMethodKeys, 'min' | 'max' | 'decimal' > | DynamicRule
+type plainDinamycRules = 'min'|'max'|'decimal'|'after'|'before'|'minDigit'|'maxDigit'
+export type DynamicRule<T extends string|number = string> = `${plainDinamycRules}:${T}`
+type PredifinedRule = Exclude< ValidationMethodKeys, plainDinamycRules > | DynamicRule
 export type Rule = PredifinedRule[]|PredifinedRule|string
-// export type Rule = PredifinedRule|string
-
 
 export interface validateType {
     data: unknown
@@ -52,4 +51,10 @@ export const validationMessage: ValidationMessage = {
     uuid: ':attr must be a valid uuid version 4',
     decimal: ':attr must be a valid decimal with :decimal digit',
     integer: ':attr must be a valid integer, larger than 0, no decimal and not infinite',
+    after: ':attr must be greater than :after',
+    afterOrEqual: ':attr must be greater or equal than :after',
+    before: ':attr must be greater than :before',
+    beforeOrEqual: ':attr must be greater or equal than :before',
+    minDigit: ':attr must be greater than :min_digit',
+    maxDigit: ':attr must be greater than :max_digit',
 } as const

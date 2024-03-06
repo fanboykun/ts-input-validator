@@ -19,6 +19,12 @@ export class Rules implements ruleType
         'uuid': () => this.uuid(),
         'decimal': () => this.decimal(),
         'integer': () => this.integer(),
+        'after': () => this.after(),
+        'before': () => this.before(),
+        'afterOrEqual': () => this.afterOrEqual(),
+        'beforeOrEqual': () => this.beforeOrEqual(),
+        'minDigit': () => this.minDigit(),
+        'maxDigit': () => this.maxDigit(),
     } as const
 
     public result: validationResult;
@@ -34,7 +40,8 @@ export class Rules implements ruleType
 
     validate(): validationResult {
         const rules = typeof this.object.rules === 'string' ? this.object.rules.split('|') : this.object.rules
-        const wildcardMethodRegex = /^(\w+):(\d+(\.\d+)?)$/;  // regex for wildcard method
+        // const wildcardMethodRegex = /^(\w+):(\d+(\.\d+)?)$/;  // regex for wildcard method
+        const wildcardMethodRegex = /^(\w+):(.+)$/;  // regex for wildcard method
 
         for (let i = 0; i < rules.length; i++) {
             const rule = rules[i] as keyof Rules["methods"]
@@ -46,6 +53,7 @@ export class Rules implements ruleType
                 method = this.methods[match[1] as keyof validationMethod]
                 this.param = match[2]
             } else {
+                console.log(`No Validation Method For: ${rule}`)
                 return this.result
                 // throw new Error(`Invalid validation input format for ${rule}`);
             }
@@ -173,6 +181,68 @@ export class Rules implements ruleType
         this.putMessage('integer', this.object.key)
     }
 
+    after() {
+        const data = this.object.data
+        const param = this.param
+        const date = data instanceof Date ? data : new Date(data as string)
+        const minDate = param instanceof Date ? param : new Date(param as string)
+        if( (date && minDate) && date instanceof Date && minDate instanceof Date) {
+            if(date > minDate) return
+        }
+        this.putMessage('after', this.object.key)
+    }
+
+    afterOrEqual() {
+        const data = this.object.data
+        const param = this.param
+        const date = data instanceof Date ? data : new Date(data as string)
+        const minDate = param instanceof Date ? param : new Date(param as string)
+        if( (date && minDate) && date instanceof Date && minDate instanceof Date) {
+            if(date >= minDate) return
+        }
+        this.putMessage('after', this.object.key)
+    }
+
+    before() {
+        const data = this.object.data
+        const param = this.param
+        const date = data instanceof Date ? data : new Date(data as string)
+        const minDate = param instanceof Date ? param : new Date(param as string)
+        if( (date && minDate) && date instanceof Date && minDate instanceof Date) {
+            if(date < minDate) return
+        }
+        this.putMessage('before', this.object.key)
+    }
+
+    beforeOrEqual() {
+        const data = this.object.data
+        const param = this.param
+        const date = data instanceof Date ? data : new Date(data as string)
+        const minDate = param instanceof Date ? param : new Date(param as string)
+        if( (date && minDate) && date instanceof Date && minDate instanceof Date) {
+            if(date <= minDate) return
+        }
+        this.putMessage('before', this.object.key)
+    }
+
+    minDigit() {
+        const data = typeof this.object.data !== 'string' ? String(this.object.data) : this.object.data
+        const param = typeof this.param !== 'string' ? String(this.param) : this.param
+        const stringValue = data.toString(); // Convert the number to a string
+        const numDigits = stringValue.replace('.', '').length; // Count the number of digits (excluding decimal if any)
+        if(numDigits >= param.length) return
+        this.putMessage('minDigit', this.object.key)
+    }
+
+    maxDigit() {
+        const data = typeof this.object.data !== 'string' ? String(this.object.data) : this.object.data
+        const param = typeof this.param !== 'string' ? String(this.param) : this.param
+        const stringValue = data.toString(); // Convert the number to a string
+        const numDigits = stringValue.replace('.', '').length; // Count the number of digits (excluding decimal if any)
+        if(numDigits <= param.length) return
+        this.putMessage('maxDigit', this.object.key)
+    }
+
     private checkIsNan(shouldPutToMessage = true): boolean {
         if(isNaN(this.param as number)) {
             if(shouldPutToMessage) this.putMessage('number', this.object.key)
@@ -184,7 +254,7 @@ export class Rules implements ruleType
     private putMessage(prop:keyof Rules["methods"], key: string, valid:boolean = false) {
         if(!valid) this.result.valid = false
         if(typeof this.object.message === 'undefined' || !this.object?.message.hasOwnProperty(prop)) {
-            const attrSplit = this.messages[prop]
+            const attrSplit = this.messages[prop] ?? ''
             let finalMsg = attrSplit !== undefined ? attrSplit.replace(/:attr/g, key) : `${key} is invalid`
             this.result.message[prop] = finalMsg
         } else if(this.object?.message.hasOwnProperty(prop)) {

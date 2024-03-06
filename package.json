@@ -16,9 +16,14 @@
     "type": "git",
     "url": "git+https://github.com/fanboykun/ts-input-validator.git"
   },
-  "keywords": ["Typescript", "input validator", "validation", "input validation"],
+  "keywords": [
+    "Typescript",
+    "input validator",
+    "validation",
+    "input validation"
+  ],
   "author": "https://github.com/fanboykun",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.11.24"
   }

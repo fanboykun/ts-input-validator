@@ -8,8 +8,10 @@ const toValidate: validateType[] = [
     { data: 'fishing', key: 'hobby', rules: 'required|string', },
     { data: '12-12-2022', key: 'birth_date', rules: 'required|date',  message: { date: 'value must be a valid birth date' } },
     { data: '5fcb09a4-f5cc-46ef-aa76-8d185e6490ab', key: 'uuid', rules: ['required', 'uuid'] },
-    { data: 123.45, key: 'hutang', rules: ['required', 'decimal:2'] },
-    { data: 200_000_000, key: 'gaji', rules: ['required', 'integer'] },
+    { data: 123.45, key: 'debt', rules: ['required', 'decimal:2'] },
+    { data: 200_000_000, key: 'salary', rules: ['required', 'integer'] },
+    { data: Date(), key: 'death_date', rules: ['required', 'date', `after:${Date()}`] },
+    { data: Date(), key: 'rich_time', rules: ['required', 'date', `before:${Date()}`] },
 ]
 
 const [ failed, result ]: finalValidationResult = Validator.setup({
