@@ -133,7 +133,7 @@ export class Rules implements ruleType
 
     boolean() {
         const data = this.object.data
-        if(typeof data === 'boolean' || data === 1) return
+        if(typeof data === 'boolean' || data === 1 || data === 0) return
         this.putMessage('boolean', this.object.key)
     }
 

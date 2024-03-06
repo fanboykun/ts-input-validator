@@ -2,6 +2,7 @@
   "name": "ts-input-validator",
   "version": "1.0.0",
   "description": "Typescript Input Validator",
+  "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -9,10 +10,15 @@
   ],
   "scripts": {
     "test": "node dist/test.js",
-    "dev": "node dist/test.js"
+    "dev": "node dist/test.js",
+    "build": "tsc"
   },
-  "keywords": [],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fanboykun/ts-input-validator.git"
+  },
+  "keywords": ["Typescript", "input validator", "validation", "input validation"],
+  "author": "https://github.com/fanboykun",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.11.24"
