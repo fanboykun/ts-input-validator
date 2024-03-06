@@ -2,7 +2,9 @@ import { Rules } from "../lib/rules"
 
 type DynamicRule<T extends string|number = string> = `min:${T}`|`max:${T}`|`decimal:${T}`
 type PredifinedRule = Exclude< ValidationMethodKeys, 'min' | 'max' | 'decimal' > | DynamicRule
-export type Rule = PredifinedRule[]|string
+export type Rule = PredifinedRule[]|PredifinedRule|string
+// export type Rule = PredifinedRule|string
+
 
 export interface validateType {
     data: unknown
