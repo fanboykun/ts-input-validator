@@ -1,11 +1,5 @@
 import { Rules } from "./rules";
-import type { finalValidationResult, validateType, validated } from "../types";
-
-type validatorSetup = {
-    dataInResult?: boolean
-    returnInvalidOnly?: boolean
-    setMessage?: Record<string, string>
-}
+import type { finalValidationResult, validateType, validated, validatorSetup } from "../types";
 export class Validator
 {
     static config: validatorSetup = {

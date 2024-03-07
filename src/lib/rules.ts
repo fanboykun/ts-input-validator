@@ -2,7 +2,7 @@ import { validationMessage, type ValidationMessage, type ruleType, type validate
 
 export class Rules implements ruleType 
 {
-    public object: validateType
+    public input: validateType
 
     public methods = {
         'required': () => this.required(),
@@ -25,6 +25,18 @@ export class Rules implements ruleType
         'beforeOrEqual': () => this.beforeOrEqual(),
         'minDigit': () => this.minDigit(),
         'maxDigit': () => this.maxDigit(),
+        'alpha': () => this.alpha(),
+        'alphaNumeric': () => this.alphaNumeric(),
+        'url': () => this.url(),
+        'array': () => this.array(),
+        'object': () => this.isObject(),
+        'equalTo': () => this.equalTo(),
+        'notEqualTo': () => this.notEqualTo(),
+        'in': () => this.in(),
+        'notIn': () => this.notIn(),
+        'regex': () => this.regex(),
+        'dateBetween': () => this.dateBetween(),
+        'numberBetween': () => this.numberBetween(),
     } as const
 
     public result: validationResult;
@@ -33,13 +45,13 @@ export class Rules implements ruleType
 
     public messages: ValidationMessage = {...validationMessage}
 
-    constructor(object: validateType) {
-        this.object = {...object};
+    constructor(input: validateType) {
+        this.input = {...input};
         this.result = { valid: true, message: {} }
     }
 
     validate(): validationResult {
-        const rules = typeof this.object.rules === 'string' ? this.object.rules.split('|') : this.object.rules
+        const rules = typeof this.input.rules === 'string' ? this.input.rules.split('|') : this.input.rules
         // const wildcardMethodRegex = /^(\w+):(\d+(\.\d+)?)$/;  // regex for wildcard method
         const wildcardMethodRegex = /^(\w+):(.+)$/;  // regex for wildcard method
 
@@ -57,8 +69,8 @@ export class Rules implements ruleType
                 return this.result
                 // throw new Error(`Invalid validation input format for ${rule}`);
             }
-            // this.result.key = this.object.key
-            this.result.data = this.object.data
+            // this.result.key = this.input.key
+            this.result.data = this.input.data
             method()
         }
         return this.result
@@ -66,10 +78,10 @@ export class Rules implements ruleType
     }
 
     required() {
-        const data = this.object.data
+        const data = this.input.data
         if( (data instanceof Array && data?.length === 0) || 
             (data === undefined || data === null || data === '')
-        ) this.putMessage('required', this.object.key)
+        ) this.putMessage('required', this.input.key)
     }
 
     min() {
@@ -77,11 +89,11 @@ export class Rules implements ruleType
         const maxValue = this.param as number
         let validated = true
 
-        if(typeof this.object.data === 'number' && this.object.data as number < maxValue) { validated = false }
-        else if(typeof this.object.data === 'string' && this.object.data.length < maxValue) { validated = false }
+        if(typeof this.input.data === 'number' && this.input.data as number < maxValue) { validated = false }
+        else if(typeof this.input.data === 'string' && this.input.data.length < maxValue) { validated = false }
 
         if(validated === false) {
-            this.putMessage('min', this.object.key)
+            this.putMessage('min', this.input.key)
         }
     }
 
@@ -90,81 +102,81 @@ export class Rules implements ruleType
         const maxValue = this.param as number
         let validated = true
 
-        if(typeof this.object.data === 'number' && this.object.data as number > maxValue) { validated = false }
-        else if(typeof this.object.data === 'string' && this.object.data.length > maxValue) { validated = false }
+        if(typeof this.input.data === 'number' && this.input.data as number > maxValue) { validated = false }
+        else if(typeof this.input.data === 'string' && this.input.data.length > maxValue) { validated = false }
 
         if(validated === false) {
-            this.putMessage('max', this.object.key)
+            this.putMessage('max', this.input.key)
             // this.putMessage('max', this.result.message['max'] as string)
         }
     }
 
     email() {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if(!emailRegex.test(this.object.data as string)) {
-            this.putMessage('email', this.object.key)
+        if(!emailRegex.test(this.input.data as string)) {
+            this.putMessage('email', this.input.key)
         }
     }
 
     password() {
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        if(!passwordRegex.test(this.object.data as string)) {
-            this.putMessage('password', this.object.key)
+        if(!passwordRegex.test(this.input.data as string)) {
+            this.putMessage('password', this.input.key)
         }
     }
 
     number() {
-        const data = this.object.data as number
+        const data = this.input.data as number
         if(typeof data !== 'number' || isNaN(data)) {
-            this.putMessage('number', this.object.key)
+            this.putMessage('number', this.input.key)
         }
     }
 
     string() {
-        const data = this.object.data
+        const data = this.input.data
         if(typeof data !== 'string' || data === '') {
-            this.putMessage('string', this.object.key)
+            this.putMessage('string', this.input.key)
         }
     }
 
     accepted() {
-        const data = this.object.data
+        const data = this.input.data
         if(data === "yes" || data === "on" || data === "true" || data === true || data === 1) return
-        this.putMessage('accepted', this.object.key)
+        this.putMessage('accepted', this.input.key)
     }
 
     declined() {
-        const data = this.object.data
+        const data = this.input.data
         if(data === "no" || data === "off" || data === "false" || data === false || data === 0) return
-        this.putMessage('declined', this.object.key)
+        this.putMessage('declined', this.input.key)
     }
 
     boolean() {
-        const data = this.object.data
+        const data = this.input.data
         if(typeof data === 'boolean' || data === 1 || data === 0) return
-        this.putMessage('boolean', this.object.key)
+        this.putMessage('boolean', this.input.key)
     }
 
     date() {
-        const data = this.object.data
+        const data = this.input.data
         if(data instanceof Date) return
         const date = new Date(data as string)
-        if(isNaN(date.getTime())) this.putMessage('date', this.object.key)
+        if(isNaN(date.getTime())) this.putMessage('date', this.input.key)
     }
 
     uuid() {
-        const data = this.object.data as string
+        const data = this.input.data as string
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
         if(!uuidRegex.test(data)) {
-            this.putMessage('uuid', this.object.key)
+            this.putMessage('uuid', this.input.key)
         }
     }
 
     decimal() {
-        const data = this.object.data
+        const data = this.input.data
         const param = this.param as number
         if(this.checkIsNan()) return
-        if( typeof this.object.data === 'string' && this.object.data != '') {
+        if( typeof this.input.data === 'string' && this.input.data != '') {
             const regex = new RegExp(`^-?\\d+(\\.\\d{1,${param}})?$`);
             const match = (data as string).match(regex)
             if(match && String(match[1]).length === +param + 1 && String(match[1]).includes('0') === false) return
@@ -172,80 +184,201 @@ export class Rules implements ruleType
             let splitted = String(data).split('.')
             if(splitted.length === 2 && splitted[1].length === +param) return
         }
-        this.putMessage('decimal', this.object.key)
+        this.putMessage('decimal', this.input.key)
     }
 
     integer() {
-        const data = this.object.data as number
+        const data = this.input.data as number
         if(!isNaN(data) && Number.isInteger(data) && data > 0 && isFinite(data)) return
-        this.putMessage('integer', this.object.key)
+        this.putMessage('integer', this.input.key)
     }
 
     after() {
-        const data = this.object.data
+        const data = this.input.data
         const param = this.param
         const date = data instanceof Date ? data : new Date(data as string)
         const minDate = param instanceof Date ? param : new Date(param as string)
         if( (date && minDate) && date instanceof Date && minDate instanceof Date) {
             if(date > minDate) return
         }
-        this.putMessage('after', this.object.key)
+        this.putMessage('after', this.input.key)
     }
 
     afterOrEqual() {
-        const data = this.object.data
+        const data = this.input.data
         const param = this.param
         const date = data instanceof Date ? data : new Date(data as string)
         const minDate = param instanceof Date ? param : new Date(param as string)
         if( (date && minDate) && date instanceof Date && minDate instanceof Date) {
             if(date >= minDate) return
         }
-        this.putMessage('after', this.object.key)
+        this.putMessage('after', this.input.key)
     }
 
     before() {
-        const data = this.object.data
+        const data = this.input.data
         const param = this.param
         const date = data instanceof Date ? data : new Date(data as string)
         const minDate = param instanceof Date ? param : new Date(param as string)
         if( (date && minDate) && date instanceof Date && minDate instanceof Date) {
             if(date < minDate) return
         }
-        this.putMessage('before', this.object.key)
+        this.putMessage('before', this.input.key)
     }
 
     beforeOrEqual() {
-        const data = this.object.data
+        const data = this.input.data
         const param = this.param
         const date = data instanceof Date ? data : new Date(data as string)
         const minDate = param instanceof Date ? param : new Date(param as string)
         if( (date && minDate) && date instanceof Date && minDate instanceof Date) {
             if(date <= minDate) return
         }
-        this.putMessage('before', this.object.key)
+        this.putMessage('before', this.input.key)
     }
 
     minDigit() {
-        const data = typeof this.object.data !== 'string' ? String(this.object.data) : this.object.data
+        const data = typeof this.input.data !== 'string' ? String(this.input.data) : this.input.data
         const param = typeof this.param !== 'string' ? String(this.param) : this.param
         const stringValue = data.toString(); // Convert the number to a string
         const numDigits = stringValue.replace('.', '').length; // Count the number of digits (excluding decimal if any)
         if(numDigits >= param.length) return
-        this.putMessage('minDigit', this.object.key)
+        this.putMessage('minDigit', this.input.key)
     }
 
     maxDigit() {
-        const data = typeof this.object.data !== 'string' ? String(this.object.data) : this.object.data
+        const data = typeof this.input.data !== 'string' ? String(this.input.data) : this.input.data
         const param = typeof this.param !== 'string' ? String(this.param) : this.param
         const stringValue = data.toString(); // Convert the number to a string
         const numDigits = stringValue.replace('.', '').length; // Count the number of digits (excluding decimal if any)
         if(numDigits <= param.length) return
-        this.putMessage('maxDigit', this.object.key)
+        this.putMessage('maxDigit', this.input.key)
+    }
+
+    alpha() {
+        const data = this.input.data;
+        const alphaRegex = /^[A-Za-z]+$/;
+        if (!alphaRegex.test(data as string)) {
+            this.putMessage('alpha', this.input.key);
+        }
+    }
+
+    alphaNumeric() {
+        const data = this.input.data;
+        const alphaNumericRegex = /^[A-Za-z0-9]+$/;
+        if (!alphaNumericRegex.test(data as string)) {
+            this.putMessage('alphaNumeric', this.input.key);
+        }
+    }
+
+    url() {
+        const data = this.input.data;
+        const urlRegex = /^(http|https):\/\/[^ "]+$/;
+        if (!urlRegex.test(data as string)) {
+            this.putMessage('url', this.input.key);
+        }
+    }
+
+    array() {
+        const data = this.input.data;
+        if (!(data instanceof Array)) {
+            this.putMessage('array', this.input.key);
+        }
+    }
+
+    isObject() {
+        const data = this.input.data;
+        if (typeof data !== 'object' || data === null || data instanceof Array) {
+            this.putMessage('object', this.input.key);
+            return
+        }
+    }
+
+    equalTo() {
+        const data = this.input.data;
+        const param = this.param;
+        if (data !== param) {
+            this.putMessage('equalTo', this.input.key);
+        }
+    }
+
+    notEqualTo() {
+        const data = this.input.data;
+        const param = this.param;
+        if (data === param) {
+            this.putMessage('notEqualTo', this.input.key);
+        }
+    }
+
+    in() {
+        const data = this.input.data;
+        const param = this.param;
+        let parsed:Array<unknown>|string
+
+        // asume the data is string or stringed array
+        if(typeof param === 'string') {
+            try { parsed = JSON.parse(param as string) } 
+            catch (err) { parsed = param as string }
+        }else if(param instanceof Array){ parsed = param }
+        else { parsed = '' } // set default to empty string
+
+        // check if the param is just a string or stringed array
+        if(typeof parsed === 'string' && parsed.includes(data as string)) return
+        if(parsed instanceof Array && parsed.includes(data)) return
+
+        this.putMessage('in', this.input.key);
+    }
+
+    notIn() {
+        const data = this.input.data;
+        const param = this.param;
+        let parsed:Array<unknown> = []
+
+        // asume the data is string or stringed array
+        if(typeof param === 'string') {
+            try { parsed = JSON.parse(param as string) } 
+            catch (err) { }
+        }else if(param instanceof Array) { parsed = param }
+
+        if (parsed instanceof Array && parsed.includes(data)) {
+            this.putMessage('notIn', this.input.key);
+        }
+    }
+
+    regex() {
+        const data = this.input.data;
+        const param = this.param;
+        const regex = new RegExp(param as string);
+        if (!regex.test(data as string)) {
+            this.putMessage('regex', this.input.key);
+        }
+    }
+
+    dateBetween() {
+        const data = this.input.data;
+        const param = this.param as string;
+        const [from, to] = param.split(',');
+
+        const fromDate = new Date(from);
+        const toDate = new Date(to);
+
+        const date = data instanceof Date ? data : new Date(data as string);
+
+        if (date >= fromDate && date <= toDate) return
+        this.putMessage('dateBetween', this.input.key);
+    }
+    
+    numberBetween() {
+        const data = this.input.data as number;
+        const [min, max] = this.param as [number, number];
+        if (data < min || data > max) {
+            this.putMessage('numberBetween', this.input.key);
+        }
     }
 
     private checkIsNan(shouldPutToMessage = true): boolean {
         if(isNaN(this.param as number)) {
-            if(shouldPutToMessage) this.putMessage('number', this.object.key)
+            if(shouldPutToMessage) this.putMessage('number', this.input.key)
             return true
         }
         return false
@@ -253,12 +386,12 @@ export class Rules implements ruleType
 
     private putMessage(prop:keyof Rules["methods"], key: string, valid:boolean = false) {
         if(!valid) this.result.valid = false
-        if(typeof this.object.message === 'undefined' || !this.object?.message.hasOwnProperty(prop)) {
+        if(typeof this.input.message === 'undefined' || !this.input?.message.hasOwnProperty(prop)) {
             const attrSplit = this.messages[prop] ?? ''
             let finalMsg = attrSplit !== undefined ? attrSplit.replace(/:attr/g, key) : `${key} is invalid`
             this.result.message[prop] = finalMsg
-        } else if(this.object?.message.hasOwnProperty(prop)) {
-            this.result.message[prop] = this.object?.message[prop] 
+        } else if(this.input?.message.hasOwnProperty(prop)) {
+            this.result.message[prop] = this.input?.message[prop] 
         } 
 
         if(!this.result.message[prop].includes(`:${prop}`)) return

@@ -41,42 +41,60 @@ if(failed) {
 
 ### Available Rules
 - ``` required ``` 
-  * must be filled, not nully value
+  * value under the validation must be filled, not nully value
 - ```min```
-  * must be numeric, usage: ```min:8```
+  * value under the validation must be numeric, usage: ```min:8```
 - ```max```
-  * must be numeric, usage: ```max:8```
+  * value under the validation must be numeric, usage: ```max:8```
 - ```email```
-  * must be a valid email
+  * value under the validation must be a valid email
 - ```number```
-  * must be a number, not string like number
+  * value under the validation must be a number, not string like number
 - ```password```
-  * must be a valid password
+  * value under the validation must be a valid password
 - ```string```
-  * must be a string
+  * value under the validation must be a string
 - ```accepted```
-  * must be either one of: "yes", "on", "true", true, 1
+  * value under the validation must be either one of: "yes", "on", "true", true, 1
 - ```declined```
-  * must be either one of: "off", "false", false, 0
+  * value under the validation must be either one of: "off", "false", false, 0
 - ```boolean```
-  * must be either one of: true, false, 1, 0
+  * value under the validation must be either one of: true, false, 1, 0
 - ```date```
-  * must be a valid date
+  * value under the validation must be a valid date by constructing ```new Date()``` function
 - ```uuid```
-  * must be a valid uuid v4
+  * value under the validation must be a valid uuid v4
 - ```decimal```
-  * must be a number with valid given decimal value, usage ```decimal:2```
+  * value under the validation must be a number with valid given decimal value, usage ```decimal:2```
 - ```integer```
-  * msut be an integer, not negative, no decimal, and is finite
+  * value under the validation must be an integer, not negative, no decimal, and is finite
+- ```after```
+- ```before```
+- ```afterOrEqual```
+- ```beforeOrEqual```
+- ```minDigit```
+- ```maxDigit```
+- ```alpha```
+- ```alphaNumeric```
+- ```url```
+- ```array```
+- ```object```
+- ```equalTo```
+- ```notEqualTo```
+- ```in```
+- ```notIn```
+- ```regex```
+- ```dateBetween```
+- ```numberBetween```
 
 ### Extended (Setup Validation)
 You can override the validation settings, like override all default validation message, returning back the data that validated. see below type: 
 
 ``` typescript
 type validatorSetup = {
-    dataInResult?: boolean  // true if you want to get the validated data, default false
-    returnInvalidOnly?: boolean // return the result that fails only, default true
-    setMessage?: Record<string, string> // override all the default validation message
+    dataInResult?: boolean 
+    returnInvalidOnly?: boolean
+    setMessage?: ValidationMessage
 }
 ``` 
 
@@ -99,16 +117,34 @@ const customValidationMessage: ValidationMessage = {
     email: ':attr must be a valid email',
     password: ':attr must be a valid password',
     accepted: ':attr must be accepted',
-    declined: ':attr must be a rejected',
+    declined: ':attr must be rejected',
     date: ':attr must be a valid date',
     uuid: ':attr must be a valid uuid version 4',
     decimal: ':attr must be a valid decimal with :decimal digit',
-    integer: ':attr must be a valid integer, larger than 0, no decimal and not infinite',
+    integer: ':attr must be a valid integer, larger than 0, no decimal, and not infinite',
+    after: ':attr must be greater than :after',
+    afterOrEqual: ':attr must be greater or equal to :after',
+    before: ':attr must be less than :before',
+    beforeOrEqual: ':attr must be less than or equal to :before',
+    minDigit: ':attr must have a minimum of :min_digit digits',
+    maxDigit: ':attr must have a maximum of :max_digit digits',
+    alpha: ':attr must contain only alphabetic characters',
+    alphaNumeric: ':attr must contain only alphanumeric characters',
+    url: ':attr must be a valid URL',
+    array: ':attr must be an array',
+    object: ':attr must be an object',
+    equalTo: ':attr must be equal to :equalTo',
+    notEqualTo: ':attr must not be equal to :notEqualTo',
+    in: ':attr must be one of the following values: :in',
+    notIn: ':attr must not be one of the following values: :notIn',
+    regex: ':attr must match the pattern :regex',
+    dateBetween: ':attr must match the date between :dateBetween',
+    numberBetween: ':attr must match the number between :numberBetween'
 }
 const [ failed, result ]: finalValidationResult = Validator.setup({
-    dataInResult: false,
-    returnInvalidOnly: true,
-    setMessage: customValidationMessage
+    dataInResult: false, // true if you want to get the validated data, default false
+    returnInvalidOnly: true, // return the result that fails only, default true
+    setMessage: customValidationMessage // override all the default validation message
 }).validate(toValidate)
 ```
 

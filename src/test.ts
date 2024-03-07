@@ -1,6 +1,7 @@
 import { Validator } from "./"
 import type { validateType, finalValidationResult } from "./"
 
+
 const toValidate: validateType[] = [
     { data: 'test@email.com', key: 'email', rules: ['required', 'email','min:8'], message: { 'required': 'value must not be empty' } },
     { data: 'p@$$w0Rd', key: 'password', rules: 'required|password|min:8|max:20' },
@@ -10,9 +11,10 @@ const toValidate: validateType[] = [
     { data: '5fcb09a4-f5cc-46ef-aa76-8d185e6490ab', key: 'uuid', rules: ['required', 'uuid'] },
     { data: 123.45, key: 'debt', rules: ['required', 'decimal:2'] },
     { data: 200_000_000, key: 'salary', rules: ['required', 'integer'] },
-    { data: Date(), key: 'death_date', rules: ['required', 'date', `after:${Date()}`] },
-    { data: Date(), key: 'rich_time', rules: ['required', 'date', `before:${Date()}`] },
+    { data: Date(), key: 'death_date', rules: ['required', 'date', 'after:01-02-2024'] },
+    { data: '02-02-2024', key: 'rich_time', rules: ['required', 'date', `before:${Date()}`] },
 ]
+
 
 const [ failed, result ]: finalValidationResult = Validator.setup({
     dataInResult: true,
