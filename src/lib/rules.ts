@@ -6,6 +6,7 @@ export class Rules implements ruleType
 
     public methods = {
         'required': () => this.required(),
+        'nullable': () => this.nullable(),
         'min': () => this.min(),
         'max': () => this.max(),
         'email' : () => this.email(),
@@ -51,6 +52,13 @@ export class Rules implements ruleType
     }
 
     validate(): validationResult {
+        if(this.input.rules.includes('nullable')) {
+            if(this.checkIsNull(this.input.data) === true) { return this.result }
+            if(this.input.rules.includes('required')) {
+                throw new Error('The field cannot be both required and nullable')
+            }
+        }
+
         const rules = typeof this.input.rules === 'string' ? this.input.rules.split('|') : this.input.rules
         // const wildcardMethodRegex = /^(\w+):(\d+(\.\d+)?)$/;  // regex for wildcard method
         const wildcardMethodRegex = /^(\w+):(.+)$/;  // regex for wildcard method
@@ -65,7 +73,7 @@ export class Rules implements ruleType
                 method = this.methods[match[1] as keyof validationMethod]
                 this.param = match[2]
             } else {
-                console.log(`No Validation Method For: ${rule}`)
+                console.error(`Invalid validation input format for ${rule}`)
                 return this.result
                 // throw new Error(`Invalid validation input format for ${rule}`);
             }
@@ -82,6 +90,10 @@ export class Rules implements ruleType
         if( (data instanceof Array && data?.length === 0) || 
             (data === undefined || data === null || data === '')
         ) this.putMessage('required', this.input.key)
+    }
+
+    nullable() {
+        return
     }
 
     min() {
@@ -381,6 +393,14 @@ export class Rules implements ruleType
             if(shouldPutToMessage) this.putMessage('number', this.input.key)
             return true
         }
+        return false
+    }
+
+    private checkIsNull(input: unknown|null = null): boolean {
+        const data = input == null ? this.input.data : input
+        if( (data instanceof Array && data?.length === 0) || 
+            (data === undefined || data === null || data === '')
+        ) return true
         return false
     }
 

@@ -1,6 +1,6 @@
 import { Rules } from "../lib/rules"
 
-type plainDinamycRules = 'min'|'max'|'decimal'|'after'|'before'|'minDigit'|'maxDigit'|'equalTo'|'notEqualTo'|'in'|'notIn'|'regex'|'dateBetween'|'numberBetween'
+type plainDinamycRules = 'min'|'max'|'decimal'|'after'|'before'|'afterOrEqual'|'beforeOrEqual'|'minDigit'|'maxDigit'|'equalTo'|'notEqualTo'|'in'|'notIn'|'regex'|'dateBetween'|'numberBetween'
 export type DynamicRule<T extends string|number = string> = `${plainDinamycRules}:${T}`
 type PredifinedRule = Exclude< ValidationMethodKeys, plainDinamycRules > | DynamicRule
 export type Rule = PredifinedRule[]|PredifinedRule|string
