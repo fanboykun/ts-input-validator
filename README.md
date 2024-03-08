@@ -69,23 +69,41 @@ if(failed) {
 - ```integer```
   * value under the validation must be an integer, not negative, no decimal, and is finite
 - ```after```
+  * value under the validation must be a valid date by constructing ```new Date()``` that the value is greater than param, usage: ```after:12-12-2024```
 - ```before```
+  * value under the validation must be a valid date by constructing ```new Date()``` that the value is smaller than param, usage: ```after:12-12-2024```
 - ```afterOrEqual```
+  * value under the validation must be a valid date by constructing ```new Date()``` that the value is greater or equal than param, usage: ```after:12-12-2024```
 - ```beforeOrEqual```
+  * value under the validation must be a valid date by constructing ```new Date()``` that the value is smaller or equal than param, usage: ```after:12-12-2024```
 - ```minDigit```
+  * value under the validation must be a valid string or number that the length is grater than param, usage: ```minDigit:10```
 - ```maxDigit```
+  * value under the validation must be a valid string or number that the length is smaller than param, usage: ```maxDigit:225```
 - ```alpha```
+  * value under the validation must be a valid alpa character by testing regex /^[A-Za-z]+$/
 - ```alphaNumeric```
+  * value under the validation must be a alpha numeric character by testing regex /^[A-Za-z0-9]+$/
 - ```url```
+  * value under the validation must be a valid url
 - ```array```
+  * value under the validation must be a valid array
 - ```object```
+  * value under the validation must be a valid object
 - ```equalTo```
+  * value under the validation must identical to param, usage: ```equalTo:stringExample```
 - ```notEqualTo```
+  * value under the validation must not identical to param, usage: ```notEqualTo:stringExample```
 - ```in```
+  * value under the validation must be a valid item of an array or string, usage: ```notIn:'["element1", "element2", "element3"]'``` or ```notIn:aReallyLongStringExample```
 - ```notIn```
+  * value under the validation must not exist as an item of an array or string, usage: ```notIn:'["element1", "element2", "element3"]'``` or ```notIn:aReallyLongStringExample```
 - ```regex```
+  * value under the validation must pass the given regex, usage: ```regex:/^(\w+):(\d+(\.\d+)?)$/```
 - ```dateBetween```
+  * value under the validation must be a valid date ( validated by constructing ```new Date()``` ) between 2 date, separated by comma (,). usage: ```dateBetween:01-01-2024,02-02-2024```
 - ```numberBetween```
+  * value under the validation must be a valid number between 2 number, separated by comma (,). usage: ```numberBetween:10,100```
 
 ### Extended (Setup Validation)
 You can override the validation settings, like override all default validation message, returning back the data that validated. see below type: 
