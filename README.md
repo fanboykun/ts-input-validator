@@ -4,7 +4,7 @@ This is a library for making input validation, like the Laravel input validator 
 
 ## Instalation
 ```bash
-pnpm i fanboykun/ts-input-validator
+pnpm i ts-input-validator
 ```
 
 ## Usage
@@ -71,11 +71,11 @@ if(failed) {
 - ```after```
   * value under the validation must be a valid date by constructing ```new Date()``` that the value is greater than param, usage: ```after:12-12-2024```
 - ```before```
-  * value under the validation must be a valid date by constructing ```new Date()``` that the value is smaller than param, usage: ```after:12-12-2024```
+  * value under the validation must be a valid date by constructing ```new Date()``` that the value is smaller than param, usage: ```before:12-12-2024```
 - ```afterOrEqual```
-  * value under the validation must be a valid date by constructing ```new Date()``` that the value is greater or equal than param, usage: ```after:12-12-2024```
+  * value under the validation must be a valid date by constructing ```new Date()``` that the value is greater or equal than param, usage: ```afterOrEqual:12-12-2024```
 - ```beforeOrEqual```
-  * value under the validation must be a valid date by constructing ```new Date()``` that the value is smaller or equal than param, usage: ```after:12-12-2024```
+  * value under the validation must be a valid date by constructing ```new Date()``` that the value is smaller or equal than param, usage: ```beforeOrEqual:12-12-2024```
 - ```minDigit```
   * value under the validation must be a valid string or number that the length is grater than param, usage: ```minDigit:10```
 - ```maxDigit```
