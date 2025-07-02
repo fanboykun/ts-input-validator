@@ -1,3 +1,4 @@
+# Important: You should just use a validation/schema validation library that follows <a href="https://github.com/standard-schema/standard-schema"> standard schema </a> like <a href="https://zod.dev/"> Zod </a>. This project is just a way i used to learn typescript
 ## What is this? 
 
 This is a library for making input validation, like the Laravel input validator does. Aiming to replicate the Laravel version but written in Typescript.
